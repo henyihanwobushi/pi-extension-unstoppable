@@ -120,10 +120,15 @@ export function registerTurnHandlers(pi: ExtensionAPI): void {
 
 /**
  * Register input handler to detect user messages
+ * Only mark as user message if source is "interactive" (typed) or "rpc" (API)
+ * Skip "extension" source which comes from sendUserMessage/sendMessage
  */
 export function registerInputHandler(pi: ExtensionAPI): void {
   pi.on("input", async (event, ctx) => {
-    // Mark that user sent a message (not auto-continue)
-    stateManager.markUserMessage();
+    // Only mark as user message if not from extension
+    if (event.source === "interactive" || event.source === "rpc") {
+      stateManager.markUserMessage();
+    }
+    // If source is "extension", it came from our auto-continue, so don't reset
   });
 }
