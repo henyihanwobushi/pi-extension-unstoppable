@@ -72,7 +72,6 @@ export function registerAgentEndHandler(pi: ExtensionAPI): void {
     const check = shouldAutoContinue(ctx);
 
     if (!check.shouldContinue) {
-      // Log why we're not continuing (for debugging)
       console.debug(`[unstoppable] Not continuing: ${check.reason}`);
       return;
     }
@@ -87,12 +86,12 @@ export function registerAgentEndHandler(pi: ExtensionAPI): void {
     // Notify user
     ctx.ui.notify(`Auto-continuing (${count}/${maxContinuations})`, "info");
 
-    // Send continuation message and trigger a new turn
-    // Use sendMessage with triggerTurn to make the agent continue working
-    await pi.sendMessage(
-      { role: "user", content: message },
-      { triggerTurn: true }
-    );
+    // Small delay to ensure the notification is shown before continuing
+    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Send continuation message - after agent_end we're not streaming,
+    // so sendUserMessage should trigger a new turn immediately
+    await pi.sendUserMessage(message);
   });
 }
 
