@@ -1,0 +1,32 @@
+{
+  "name": "pi-extension-unstoppable",
+  "version": "1.0.0",
+  "description": "pi extension for auto-continuation and rest tool",
+  "main": "src/index.ts",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "pi": {
+    "extensions": ["./src/index.ts"]
+  },
+  "keywords": [
+    "pi",
+    "extension",
+    "auto-continue",
+    "rest"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@sinclair/typebox": "^0.34.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0",
+    "@types/node": "^20.0.0"
+  },
+  "peerDependencies": {
+    "@mariozechner/pi-coding-agent": ">=0.1.0"
+  }
+}
