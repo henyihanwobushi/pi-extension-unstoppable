@@ -25,7 +25,29 @@ A new tool called `rest` that allows the agent to pause execution for up to 10 m
 
 ## Installation
 
-### Option 1: Global Installation
+### Option 1: Install from GitHub (Recommended)
+
+```bash
+pi install https://github.com/henyihanwobushi/pi-extension-unstoppable
+```
+
+Or add to your `settings.json`:
+
+```json
+{
+  "extensions": ["https://github.com/henyihanwobushi/pi-extension-unstoppable"]
+}
+```
+
+### Option 2: Clone and Install Locally
+
+```bash
+git clone https://github.com/henyihanwobushi/pi-extension-unstoppable.git
+cd pi-extension-unstoppable
+pi install ./src/index.ts
+```
+
+### Option 3: Global Installation
 
 Copy the `index.ts` file to the global extensions directory:
 
@@ -34,7 +56,7 @@ mkdir -p ~/.pi/agent/extensions
 cp index.ts ~/.pi/agent/extensions/unstoppable.ts
 ```
 
-### Option 2: Project-Local Installation
+### Option 4: Project-Local Installation
 
 Copy the extension to your project:
 
@@ -43,30 +65,13 @@ mkdir -p .pi/extensions
 cp index.ts .pi/extensions/unstoppable.ts
 ```
 
-### Option 3: Settings Configuration
+### Option 5: Settings Configuration (Local Path)
 
 Add to your `settings.json`:
 
 ```json
 {
-  "extensions": ["/path/to/unstoppable/index.ts"]
-}
-```
-
-### Option 4: As a Package
-
-For extensions with dependencies, use the `package.json` approach:
-
-```bash
-cd /path/to/unstoppable
-npm install
-```
-
-Then add to `settings.json`:
-
-```json
-{
-  "extensions": ["/path/to/unstoppable/index.ts"]
+  "extensions": ["/path/to/unstoppable/src/index.ts"]
 }
 ```
 
@@ -107,7 +112,7 @@ Configure the extension:
 
 Options:
 - **Toggle Auto-continue** - Enable/disable auto-continuation
-- **Set max continuations** - Configure the limit (1-100)
+- **Set max continuations** - Configure the limit (0-100, or "inf" for unlimited)
 - **View statistics** - See continuation and rest stats
 - **Reset counters** - Clear all counters
 
@@ -125,7 +130,7 @@ Or without arguments to be prompted for duration.
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `maxContinuations` | 10 | Maximum auto-continuations per session |
+| `maxContinuations` | ∞ (unlimited) | Maximum auto-continuations per session (0 or "inf" for unlimited) |
 | `continueOnError` | false | Continue even if agent ends with error |
 | `minContinuationDelay` | 1000ms | Minimum time between continuations |
 | `restCooldown` | 5000ms | Cooldown after rest before continuing |
@@ -155,7 +160,7 @@ unstopable/
 ## Safety Features
 
 - **Maximum rest duration**: Hard limit of 10 minutes (600 seconds)
-- **Maximum continuations**: Configurable limit prevents infinite loops
+- **Maximum continuations**: Configurable limit (default: unlimited, set to 1-100 for safety)
 - **User interruptible**: Rest periods can be cancelled with Ctrl+C
 - **State tracking**: All activity is logged and can be reviewed
 
