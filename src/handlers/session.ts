@@ -48,7 +48,8 @@ export function registerUnstoppableCommand(pi: ExtensionAPI): void {
       const toggleLabel = stateManager.isAutoContinueEnabled()
         ? "Disable Auto-continue"
         : "Enable Auto-continue";
-      const maxLabel = `Set max continuations (current: ${configManager.getMaxContinuations()})`;
+      const currentMax = configManager.isInfinite() ? "∞" : configManager.getMaxContinuations();
+      const maxLabel = `Set max continuations (current: ${currentMax})`;
 
       const action = await ctx.ui.select("Unstoppable Settings:", [
         toggleLabel,
@@ -68,26 +69,35 @@ export function registerUnstoppableCommand(pi: ExtensionAPI): void {
         );
       } else if (action === maxLabel) {
         const input = await ctx.ui.input(
-          "Maximum continuations (1-100):",
+          "Maximum continuations (1-100, or 0/inf for unlimited):",
           String(configManager.getMaxContinuations())
         );
         if (!input) {
           ctx.ui.notify("Cancelled", "info");
           return;
         }
+        // Check for "inf" or "infinity" input
+        const lowerInput = input.toLowerCase().trim();
+        if (lowerInput === "inf" || lowerInput === "infinity" || lowerInput === "unlimited") {
+          configManager.setMaxContinuations(0);
+          ctx.ui.notify("Max continuations set to unlimited (∞)", "info");
+          return;
+        }
         const max = parseInt(input, 10);
-        if (!isNaN(max) && max >= 1 && max <= 100) {
+        if (!isNaN(max) && max >= 0 && max <= 100) {
           configManager.setMaxContinuations(max);
-          ctx.ui.notify(`Max continuations set to ${max}`, "info");
+          const display = max === 0 ? "unlimited (∞)" : max;
+          ctx.ui.notify(`Max continuations set to ${display}`, "info");
         } else {
-          ctx.ui.notify("Invalid number (must be 1-100)", "error");
+          ctx.ui.notify("Invalid number (must be 0-100, or inf)", "error");
         }
       } else if (action === "View statistics") {
         const stats = stateManager.getStats();
+        const maxDisplay = configManager.isInfinite() ? "∞" : configManager.getMaxContinuations();
         const lines = [
           "Unstoppable Statistics:",
           `  Auto-continue: ${stats.autoContinueEnabled ? "enabled" : "disabled"}`,
-          `  Continuations: ${stats.continuationCount}/${configManager.getMaxContinuations()}`,
+          `  Continuations: ${stats.continuationCount}/${maxDisplay}`,
           `  Rest count: ${stats.restCount}`,
           `  Total rest time: ${stats.totalRestTime}s`,
           `  Avg rest duration: ${stats.avgRestDuration}s`,

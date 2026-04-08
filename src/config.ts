@@ -49,8 +49,11 @@ export class ConfigManager {
 
   /**
    * Check if we can continue (under max limit)
+   * Returns true always if maxContinuations is 0 (infinite)
    */
   canContinue(currentCount: number): boolean {
+    // 0 means infinite/unlimited
+    if (this.config.maxContinuations === 0) return true;
     return currentCount < this.config.maxContinuations;
   }
 
@@ -70,17 +73,29 @@ export class ConfigManager {
   }
 
   /**
-   * Get max continuations
+   * Get max continuations (0 means infinite)
    */
   getMaxContinuations(): number {
     return this.config.maxContinuations;
   }
 
   /**
-   * Set max continuations
+   * Set max continuations (0 for infinite, 1-100 for limited)
    */
   setMaxContinuations(max: number): void {
-    this.config.maxContinuations = Math.max(1, Math.min(100, max));
+    // Allow 0 for infinite, otherwise clamp to 1-100
+    if (max === 0) {
+      this.config.maxContinuations = 0;
+    } else {
+      this.config.maxContinuations = Math.max(1, Math.min(100, max));
+    }
+  }
+
+  /**
+   * Check if max continuations is infinite (0)
+   */
+  isInfinite(): boolean {
+    return this.config.maxContinuations === 0;
   }
 
   /**
@@ -94,7 +109,8 @@ export class ConfigManager {
    * Get the continuation message
    */
   getContinuationMessage(count: number, max: number): string {
-    return `[Auto-continuation ${count}/${max}] ${this.config.continuationMessage}`;
+    const maxDisplay = max === 0 ? "∞" : max;
+    return `[Auto-continuation ${count}/${maxDisplay}] ${this.config.continuationMessage}`;
   }
 }
 
