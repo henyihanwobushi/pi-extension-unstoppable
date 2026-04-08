@@ -87,8 +87,12 @@ export function registerAgentEndHandler(pi: ExtensionAPI): void {
     // Notify user
     ctx.ui.notify(`Auto-continuing (${count}/${maxContinuations})`, "info");
 
-    // Send continuation message
-    await pi.sendUserMessage(message);
+    // Send continuation message and trigger a new turn
+    // Use sendMessage with triggerTurn to make the agent continue working
+    await pi.sendMessage(
+      { role: "user", content: message },
+      { triggerTurn: true }
+    );
   });
 }
 
