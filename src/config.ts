@@ -108,8 +108,11 @@ export class ConfigManager {
   /**
    * Get the continuation message
    */
-  getContinuationMessage(count: number, max: number): string {
+  getContinuationMessage(count: number, max: number, aim: string | null): string {
     const maxDisplay = max === 0 ? "∞" : max;
+    if (aim) {
+      return `[Auto-continuation ${count}/${maxDisplay}] Continue working toward the goal: ${aim}`;
+    }
     return `[Auto-continuation ${count}/${maxDisplay}] ${this.config.continuationMessage}`;
   }
 }

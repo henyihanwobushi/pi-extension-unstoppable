@@ -26,6 +26,7 @@ import {
   registerSessionHandlers,
   registerUnstoppableCommand,
   registerRestCommand,
+  registerAimCommand,
 } from "./handlers/session";
 
 /**
@@ -47,6 +48,7 @@ export default function unstoppableExtension(pi: ExtensionAPI) {
   // Register commands
   registerUnstoppableCommand(pi);
   registerRestCommand(pi);
+  registerAimCommand(pi);
 
   // Log that extension is loaded
   console.debug("[unstoppable] Extension loaded");

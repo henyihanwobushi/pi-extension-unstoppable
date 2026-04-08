@@ -123,6 +123,29 @@ export class StateManager {
     this.persist();
   }
 
+  /**
+   * Set the current aim/goal
+   */
+  setAim(aim: string | null): void {
+    this.persistentState.currentAim = aim;
+    this.persist();
+  }
+
+  /**
+   * Get the current aim/goal
+   */
+  getAim(): string | null {
+    return this.persistentState.currentAim;
+  }
+
+  /**
+   * Clear the current aim
+   */
+  clearAim(): void {
+    this.persistentState.currentAim = null;
+    this.persist();
+  }
+
   // ==================== Runtime State ====================
 
   /**

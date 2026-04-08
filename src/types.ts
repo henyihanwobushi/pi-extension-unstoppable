@@ -15,6 +15,9 @@ export interface UnstoppableState {
 
   /** Number of times rest tool was used */
   restCount: number;
+
+  /** The user's current aim/goal for the agent */
+  currentAim: string | null;
 }
 
 /**
@@ -83,6 +86,7 @@ export const DEFAULT_STATE: UnstoppableState = {
   lastActivity: Date.now(),
   totalRestTime: 0,
   restCount: 0,
+  currentAim: null,
 };
 
 /**

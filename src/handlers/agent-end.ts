@@ -89,8 +89,9 @@ export function registerAgentEndHandler(pi: ExtensionAPI): void {
     const count = stateManager.incrementContinuation();
     const maxContinuations = configManager.getMaxContinuations();
 
-    // Get the continuation message
-    const message = configManager.getContinuationMessage(count, maxContinuations);
+    // Get the continuation message with user's aim if set
+    const aim = stateManager.getAim();
+    const message = configManager.getContinuationMessage(count, maxContinuations, aim);
 
     // Notify user
     ctx.ui.notify(`Auto-continuing (${count}/${maxContinuations})`, "info");

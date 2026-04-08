@@ -16,6 +16,7 @@ export function registerSessionHandlers(pi: ExtensionAPI): void {
 
     // Show notification that extension is loaded
     const stats = stateManager.getStats();
+    const aim = stateManager.getAim();
     if (stats.continuationCount > 0 || stats.restCount > 0) {
       ctx.ui.notify(
         `Unstoppable loaded (${stats.continuationCount} continuations, ${stats.restCount} rests)`,
@@ -23,6 +24,11 @@ export function registerSessionHandlers(pi: ExtensionAPI): void {
       );
     } else {
       ctx.ui.notify("Unstoppable extension loaded", "info");
+    }
+
+    // Show current aim if set
+    if (aim) {
+      ctx.ui.notify(`Current aim: ${aim}`, "info");
     }
   });
 
@@ -94,6 +100,7 @@ export function registerUnstoppableCommand(pi: ExtensionAPI): void {
       } else if (action === "View statistics") {
         const stats = stateManager.getStats();
         const maxDisplay = configManager.isInfinite() ? "∞" : configManager.getMaxContinuations();
+        const aim = stateManager.getAim();
         const lines = [
           "Unstoppable Statistics:",
           `  Auto-continue: ${stats.autoContinueEnabled ? "enabled" : "disabled"}`,
@@ -101,6 +108,7 @@ export function registerUnstoppableCommand(pi: ExtensionAPI): void {
           `  Rest count: ${stats.restCount}`,
           `  Total rest time: ${stats.totalRestTime}s`,
           `  Avg rest duration: ${stats.avgRestDuration}s`,
+          aim ? `  Current aim: ${aim}` : "  No aim set (use /aim)",
         ];
         ctx.ui.notify(lines.join("\n"), "info");
       } else if (action === "Reset counters") {
@@ -111,6 +119,67 @@ export function registerUnstoppableCommand(pi: ExtensionAPI): void {
         if (confirmed) {
           stateManager.resetCounters();
           ctx.ui.notify("Counters reset", "info");
+        }
+      }
+    },
+  });
+}
+
+/**
+ * Register the /aim command to set the user's goal
+ */
+export function registerAimCommand(pi: ExtensionAPI): void {
+  pi.registerCommand("aim", {
+    description: "Set or manage the current goal/aim for the agent",
+    async handler(args, ctx) {
+      const currentAim = stateManager.getAim();
+
+      // If args provided, set the aim directly
+      if (args && args.trim()) {
+        const aim = args.trim();
+        stateManager.setAim(aim);
+        ctx.ui.notify(`Aim set: ${aim}`, "info");
+        return;
+      }
+
+      // Otherwise show interactive menu
+      const options = [
+        currentAim ? "View current aim" : null,
+        "Set new aim",
+        currentAim ? "Clear aim" : null,
+        "Cancel",
+      ].filter(Boolean) as string[];
+
+      const action = await ctx.ui.select("Aim Management:", options);
+
+      if (!action || action === "Cancel") return;
+
+      if (action === "View current aim") {
+        ctx.ui.notify(`Current aim: ${currentAim}`, "info");
+      } else if (action === "Set new aim") {
+        const aim = await ctx.ui.input(
+          "Enter the goal/aim for the agent:",
+          currentAim || ""
+        );
+        if (aim === undefined || aim === null) {
+          ctx.ui.notify("Cancelled", "info");
+          return;
+        }
+        if (aim.trim()) {
+          stateManager.setAim(aim.trim());
+          ctx.ui.notify(`Aim set: ${aim.trim()}`, "info");
+        } else {
+          stateManager.clearAim();
+          ctx.ui.notify("Aim cleared (empty input)", "info");
+        }
+      } else if (action === "Clear aim") {
+        const confirmed = await ctx.ui.confirm(
+          "Clear current aim?",
+          `Current aim: ${currentAim}`
+        );
+        if (confirmed) {
+          stateManager.clearAim();
+          ctx.ui.notify("Aim cleared", "info");
         }
       }
     },
