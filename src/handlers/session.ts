@@ -143,9 +143,10 @@ export function registerAimCommand(pi: ExtensionAPI): void {
       }
 
       // Otherwise show interactive menu
+      const aimLabel = currentAim ? `View current aim: ${currentAim.substring(0, 30)}${currentAim.length > 30 ? '...' : ''}` : "View current aim (none set)";
       const options = [
-        currentAim ? "View current aim" : null,
-        "Set new aim",
+        aimLabel,
+        currentAim ? "Set new aim" : "Set aim",
         currentAim ? "Clear aim" : null,
         "Cancel",
       ].filter(Boolean) as string[];
@@ -154,9 +155,13 @@ export function registerAimCommand(pi: ExtensionAPI): void {
 
       if (!action || action === "Cancel") return;
 
-      if (action === "View current aim") {
-        ctx.ui.notify(`Current aim: ${currentAim}`, "info");
-      } else if (action === "Set new aim") {
+      if (action.startsWith("View current aim")) {
+        if (currentAim) {
+          ctx.ui.notify(`Current aim: ${currentAim}`, "info");
+        } else {
+          ctx.ui.notify("No aim currently set. Use 'Set aim' to define one.", "info");
+        }
+      } else if (action === "Set new aim" || action === "Set aim") {
         const aim = await ctx.ui.input(
           "Enter the goal/aim for the agent:",
           currentAim || ""
