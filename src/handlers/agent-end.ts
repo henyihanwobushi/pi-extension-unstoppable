@@ -61,6 +61,15 @@ function shouldAutoContinue(ctx: ExtensionContext): ContinueCheck {
     };
   }
 
+  // Don't continue if last message was already an auto-continue
+  // This prevents infinite loops when user stops the agent
+  if (stateManager.wasLastMessageAutoContinue()) {
+    return {
+      shouldContinue: false,
+      reason: "Last message was auto-continue, waiting for user input",
+    };
+  }
+
   return { shouldContinue: true, reason: "Ready to continue" };
 }
 
@@ -106,5 +115,15 @@ export function registerTurnHandlers(pi: ExtensionAPI): void {
 
   pi.on("turn_end", async (event, ctx) => {
     stateManager.updateActivity();
+  });
+}
+
+/**
+ * Register input handler to detect user messages
+ */
+export function registerInputHandler(pi: ExtensionAPI): void {
+  pi.on("input", async (event, ctx) => {
+    // Mark that user sent a message (not auto-continue)
+    stateManager.markUserMessage();
   });
 }

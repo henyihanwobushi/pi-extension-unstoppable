@@ -78,8 +78,23 @@ export class StateManager {
     this.persistentState.continuationCount++;
     this.persistentState.lastActivity = Date.now();
     this.runtimeState.lastContinuationTime = Date.now();
+    this.runtimeState.lastMessageWasAutoContinue = true;
     this.persist();
     return this.persistentState.continuationCount;
+  }
+
+  /**
+   * Mark that user sent a message (not auto-continue)
+   */
+  markUserMessage(): void {
+    this.runtimeState.lastMessageWasAutoContinue = false;
+  }
+
+  /**
+   * Check if last message was from auto-continue
+   */
+  wasLastMessageAutoContinue(): boolean {
+    return this.runtimeState.lastMessageWasAutoContinue;
   }
 
   /**

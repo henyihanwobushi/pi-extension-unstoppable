@@ -20,6 +20,7 @@ import { registerRestTool } from "./tools/rest";
 import {
   registerAgentEndHandler,
   registerTurnHandlers,
+  registerInputHandler,
 } from "./handlers/agent-end";
 import {
   registerSessionHandlers,
@@ -41,6 +42,7 @@ export default function unstoppableExtension(pi: ExtensionAPI) {
   registerSessionHandlers(pi);
   registerAgentEndHandler(pi);
   registerTurnHandlers(pi);
+  registerInputHandler(pi);
 
   // Register commands
   registerUnstoppableCommand(pi);

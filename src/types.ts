@@ -35,6 +35,9 @@ export interface RuntimeState {
 
   /** Timestamp of last continuation */
   lastContinuationTime: number;
+
+  /** Whether the last message was from auto-continuation (not user) */
+  lastMessageWasAutoContinue: boolean;
 }
 
 /**
@@ -91,6 +94,7 @@ export const DEFAULT_RUNTIME_STATE: RuntimeState = {
   criticalOperationInProgress: false,
   autoContinueEnabled: true,
   lastContinuationTime: 0,
+  lastMessageWasAutoContinue: false,
 };
 
 /**
