@@ -67,7 +67,7 @@ export interface UnstoppableConfig {
  * Default configuration values
  */
 export const DEFAULT_CONFIG: UnstoppableConfig = {
-  maxContinuations: 10,
+  maxContinuations: 0, // 0 = infinite/unlimited
   continueOnError: false,
   minContinuationDelay: 1000,
   restCooldown: 5000,
